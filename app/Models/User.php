@@ -15,14 +15,8 @@ use Spatie\Permission\Traits\HasRoles;
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
-    /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable, HasRoles;
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
@@ -30,4 +24,34 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    protected $fillable = [
+        'first_name',
+        'last_name_father',
+        'last_name_mother',
+        'ci',
+        'ci_extension',
+        'birth_date',
+        'phone',
+        'avatar',
+        'username',
+        'password',
+        'active',
+    ];
+
+    //Nombre completo del usuario
+    public function getFullNameAttribute(): string{
+        return trim("{$this->first_name} {$this->last_name_father} {$this->last_name_mother}");
+    }
+
+    //Iniciales para avatar fallback
+    public function getInitialsAttribute(): string{
+        $parts = array_filter([
+            $this->first_name,
+            $this->last_name_father,
+            $this->last_name_mother
+        ]);
+        return strtoupper(implode('', array_map(fn($p) => $p[0], $parts)));
+    }
+
 }
